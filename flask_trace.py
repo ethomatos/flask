@@ -1,12 +1,3 @@
-from ddtrace import tracer
-
-"""
-tracer.configure(
-    hostname='datadog',
-    port=8126,
-)
-"""
-
 from flask import Flask
 app = Flask(__name__)
 
