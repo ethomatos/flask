@@ -8,13 +8,6 @@ Need to have Docker Installed on the machine.
 # Python Flask APM Sandbox
 This is a sample flask app with configurations in docker-compose file for APM.
 
-### Create a custom .env file
-
-Make sure that in your ~ directory, you have a file called sandbox.docker.env that contains:
-
-```
-DD_API_KEY=<Your API Key>
-```
 
 # STEPS:
 1. Run `docker-compose build` to build the docker image
