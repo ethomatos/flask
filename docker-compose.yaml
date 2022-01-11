@@ -1,0 +1,12 @@
+version: "3"
+services:
+  flask_app:
+    build: ./
+    ports:
+      - "10000:5000"
+    environment:
+      - DD_AGENT_HOST=host.docker.internal
+      - DD_TRACE_AGENT_PORT=8126
+      - DD_SERVICE=flask
+      - DD_ENV=marsh
+      - DD_VERSION=1.0
