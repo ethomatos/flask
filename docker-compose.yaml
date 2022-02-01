@@ -10,20 +10,18 @@ services:
       - DD_SERVICE=flaskapp
       - DD_VERSION=1.0.0
   datadog-agent:
-    image: "gcr.io/datadoghq/agent:latest"
+    image: "gcr.io/datadoghq/agent:7-rc"
     container_name: datadog-agent
+    env_file:
+      - ~/docker.env
     environment:
-      - DD_API_KEY=690f5832106607daeec5c7cc7d385d46
       - DD_APM_ENABLED=false
       - DD_APM_NON_LOCAL_TRAFFIC=true
       - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
       - DD_ENV=melville
       - DD_HEALTH_PORT=5555
-      - DD_HOSTNAME=tho-oplex2
       - DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
       - DD_LOGS_CONFIG_COMPRESSION_LEVEL=6
-      - DD_LOGS_CONFIG_DOCKER_CONTAINER_USE_FILE=true
-      - DD_LOGS_CONFIG_USE_HTTP=true
       - DD_LOGS_ENABLED=true
       - DD_LOG_FORMAT_JSON=true
       - DD_LOG_LEVEL=debug
