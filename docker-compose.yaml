@@ -2,11 +2,61 @@ version: "3"
 services:
   flask_app:
     build: ./
+    container_name: flaskapp
     ports:
       - "10000:5000"
     environment:
-      - DD_AGENT_HOST=host.docker.internal
-      - DD_TRACE_AGENT_PORT=8126
-      - DD_SERVICE=flask
-      - DD_ENV=marsh
-      - DD_VERSION=1.0
+      - DD_ENV=melville
+      - DD_SERVICE=flaskapp
+      - DD_VERSION=1.0.0
+  datadog-agent:
+    image: "gcr.io/datadoghq/agent:latest"
+    container_name: datadog-agent
+    environment:
+      - DD_API_KEY=690f5832106607daeec5c7cc7d385d46
+      - DD_APM_ENABLED=false
+      - DD_APM_NON_LOCAL_TRAFFIC=true
+      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
+      - DD_ENV=melville
+      - DD_HEALTH_PORT=5555
+      - DD_HOSTNAME=tho-oplex2
+      - DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
+      - DD_LOGS_CONFIG_COMPRESSION_LEVEL=6
+      - DD_LOGS_CONFIG_DOCKER_CONTAINER_USE_FILE=true
+      - DD_LOGS_CONFIG_USE_HTTP=true
+      - DD_LOGS_ENABLED=true
+      - DD_LOG_FORMAT_JSON=true
+      - DD_LOG_LEVEL=debug
+      - DD_PROCESS_AGENT_ENABLED=true
+      - DD_RUNTIME_SECURITY_CONFIG_ENABLED=true
+      - DD_SYSTEM_PROBE_SERVICE_MONITORING_ENABLED=true
+      - DD_SYSTEM_PROBE_ENABLED=true
+      - DD_TAGS=owner:et cloud_provider:onprem system:dell
+      - HOST_ROOT=/host/root
+    ports:
+      - 8125:8125/udp
+      - 8126:8126/tcp
+    volumes:
+      - /etc/os-release:/etc/os-release
+      - /etc/group:/etc/group:ro
+      - /:/host/root:ro
+      - /etc/passwd:/etc/passwd:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /proc/:/host/proc/:ro
+      - /opt/datadog-agent/run:/opt/datadog-agent/run:rw 
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+      - /sys/kernel/debug:/sys/kernel/debug
+    cap_add:
+      - NET_BROADCAST
+      - NET_ADMIN
+      - NET_RAW
+      - IPC_LOCK
+      - CHOWN
+      - SYS_ADMIN
+      - SYS_RESOURCE
+      - SYS_PTRACE
+    security_opt:
+      - apparmor:unconfined
+    links: 
+      - flask_app
