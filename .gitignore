@@ -1,2 +1,4 @@
 secrets
-dbdata
+dbdata/db
+dbdata/log/mysql
+test_db.py

@@ -21,16 +21,33 @@ def mysql_conn(user, password, db):
 
 app = Flask(__name__)
 
-@app.route('/')
-def hello_world():
-	cnx = mysql_conn(USER, read_password(), DB)
-	cursor = cnx.cursor()
+def count_tables(cursor):
 	query = ("show tables")
 	cursor.execute(query)
 	count = 0
 	for table in cursor:
 		count += 1	
-	return 'This is Flask running in a Docker container querying a MySQL container with ' + str(count) + ' tables'
+	return(count)
+
+@app.route('/count')
+def counter():
+	cnx = mysql_conn(USER, read_password(), DB)
+	cursor = cnx.cursor()
+	query = ("show tables")
+	cursor.execute(query)
+	tables = ""
+	for	table in cursor:
+		for field in table:
+			tables = tables + "_" + field
+	cursor.close()
+	cnx.close()
+	return "Tables in the database: " + tables
+
+@app.route('/')
+def hello_world():
+	cnx = mysql_conn(USER, read_password(), DB)
+	cursor = cnx.cursor()
+	return 'This is Flask running in a Docker container querying a MySQL container with ' + str(count_tables(cursor)) + ' tables'
 	cursor.close()
 	cnx.close()
 
