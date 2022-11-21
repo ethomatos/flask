@@ -15,6 +15,7 @@ def read_password():
 	return password
 
 def mysql_conn(user, password, db):
+	print("Testing inside mysql_conn")
 	host = 'mysql'
 	cnx = mysql.connector.connect(user=user, password=password, host=host, database=db)
 	return cnx;
@@ -27,6 +28,7 @@ def count_tables(cursor):
 	count = 0
 	for table in cursor:
 		count += 1	
+	print("Testing inside count_tables")
 	return(count)
 
 @app.route('/count')
@@ -41,12 +43,14 @@ def counter():
 			tables = tables + "_" + field
 	cursor.close()
 	cnx.close()
+	print("Testing inside counter")
 	return "Tables in the database: " + tables
 
 @app.route('/')
 def hello_world():
 	cnx = mysql_conn(USER, read_password(), DB)
 	cursor = cnx.cursor()
+	print("Testing inside hello world")
 	return 'This is Flask running in a Docker container querying a MySQL container with ' + str(count_tables(cursor)) + ' tables'
 	cursor.close()
 	cnx.close()

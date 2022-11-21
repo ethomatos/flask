@@ -1,22 +1,21 @@
 version: "3"
 services:
+  # The Flask application container
   flask_app:
     build: ./
-    container_name: flaskapp
     ports:
       - "10000:5000"
     container_name: flask
     secrets:
       - mysql_password
     environment:
-      - DD_AGENT_HOST=host.docker.internal
-      - DD_TRACE_AGENT_PORT=8126
       - DD_SERVICE=flask
-      - DD_ENV=dev
-      - DD_VERSION=1.0
+      - DD_ENV=docker
+      - DD_VERSION=1.0.0
       - MYSQL_USER=mysql
       - MYSQL_DATABASE=real_estate
       - MYSQL_PASSWORD=/run/secrets/mysql_password
+  # The MySQL database container
   db:
     image: mysql:latest
     container_name: mysql
@@ -47,6 +46,54 @@ services:
       - MYSQL_PASSWORD_FILE=/run/secrets/mysql_password
       - MYSQL_USER=mysql
       - MYSQL_DATABASE=real_estate
+  # The Datadog agent container
+  datadog-agent:
+    image: "gcr.io/datadoghq/agent:7-rc-jmx"
+    container_name: datadog-agent
+    env_file:
+      - ~/sandbox.docker.env
+    environment:
+      - DD_APM_ENABLED=true
+      - DD_APM_NON_LOCAL_TRAFFIC=true
+      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
+      - DD_ENV=docker
+      - DD_HOSTNAME=macbook-pro
+      - DD_HEALTH_PORT=5555
+      - DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
+      - DD_LOGS_CONFIG_COMPRESSION_LEVEL=6
+      - DD_LOGS_ENABLED=true
+      - DD_LOG_FORMAT_JSON=true
+      - DD_LOG_LEVEL=debug
+      - DD_PROCESS_AGENT_ENABLED=true
+      - DD_RUNTIME_SECURITY_CONFIG_ENABLED=true
+      - DD_SYSTEM_PROBE_SERVICE_MONITORING_ENABLED=true
+      - DD_TAGS=owner:et cloud_provider:onprem system:mac ddmonitor:true availability:true performance:false
+      - HOST_ROOT=/host/root
+    ports:
+      - 8125:8125/udp
+      - 8126:8126/tcp
+    volumes:
+      - /etc/os-release:/etc/os-release
+      - /etc/group:/etc/group:ro
+      - /:/host/root:ro
+      - /etc/passwd:/etc/passwd:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /proc/:/host/proc/:ro
+      - /opt/datadog-agent/run:/opt/datadog-agent/run:rw
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+      - /sys/kernel/debug:/sys/kernel/debug
+    cap_add:
+      - NET_BROADCAST
+      - NET_ADMIN
+      - NET_RAW
+      - IPC_LOCK
+      - CHOWN
+      - SYS_ADMIN
+      - SYS_RESOURCE
+      - SYS_PTRACE
+    security_opt:
+      - apparmor:unconfined
 
 # This is where the password values are kept secret in files 
 # on the host system that need to exist to be read in when
