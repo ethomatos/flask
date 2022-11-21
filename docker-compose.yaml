@@ -47,25 +47,24 @@ services:
       - MYSQL_USER=mysql
       - MYSQL_DATABASE=real_estate
   # The Datadog agent container
-  datadog-agent:
-    image: "gcr.io/datadoghq/agent:7-rc-jmx"
-    container_name: datadog-agent
+  datadog:
+    image: "gcr.io/datadoghq/agent:latest"
+    container_name: datadog
     env_file:
       - ~/sandbox.docker.env
     environment:
-      - DD_APM_ENABLED=true
-      - DD_APM_NON_LOCAL_TRAFFIC=true
+      - DD_APM_ENABLED=false
       - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
       - DD_ENV=docker
-      - DD_HOSTNAME=macbook-pro
+      - DD_HOSTNAME=et-testvm
       - DD_HEALTH_PORT=5555
       - DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
       - DD_LOGS_CONFIG_COMPRESSION_LEVEL=6
       - DD_LOGS_ENABLED=true
       - DD_LOG_FORMAT_JSON=true
-      - DD_LOG_LEVEL=debug
+      - DD_LOG_LEVEL=info
       - DD_PROCESS_AGENT_ENABLED=true
-      - DD_RUNTIME_SECURITY_CONFIG_ENABLED=true
+      - DD_SYSTEM_PROBE_ENABLED=true
       - DD_SYSTEM_PROBE_SERVICE_MONITORING_ENABLED=true
       - DD_TAGS=owner:et cloud_provider:onprem system:mac ddmonitor:true availability:true performance:false
       - HOST_ROOT=/host/root
@@ -73,7 +72,7 @@ services:
       - 8125:8125/udp
       - 8126:8126/tcp
     volumes:
-      - /etc/os-release:/etc/os-release
+      - /etc/os-release:/host/etc/os-release:ro
       - /etc/group:/etc/group:ro
       - /:/host/root:ro
       - /etc/passwd:/etc/passwd:ro
